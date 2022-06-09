@@ -26,13 +26,20 @@ class my_own_player(part.Participant):
         # you can refer to an object of 'marbles', named as 'playground_marbles'
         # the return should be the number of marbles bet (> 0)!
         my_current_marbles = playground_marbles.get_num_of_my_marbles(self)
-        return random.randint(playground_marbles.MIN_HOLDING, my_current_marbles)
+        if my_current_marbles<10:
+            return 100
+        else:
+            return random.randint(playground_marbles.MIN_HOLDING, my_current_marbles)
 
     def declare_statement_strategy(self, playground_marbles):
         # you can override this method in this sub-class
         # you can refer to an object of 'marbles', named as 'playground_marbles'
         # the return should be True or False!
-        answer = bool(random.randint(0, 1))
+        if playground_marbles.get_num_of_my_marbles(self)%2==0:
+            answer=bool(0)
+        else: answer=bool(1)
+
+        # answer = bool(random.randint(0, 1))
         return self.set_statement(answer)
     # ================================================================================= for marble game
 
@@ -46,20 +53,37 @@ class my_own_player(part.Participant):
             self.temp_list = copy.deepcopy(playground_glasses._players_steps)  # 상대방것도 복사
         length = len(self.temp_list)
         if self.previous_player != 'None' and self.temp_list != []:
-            if self.position < length - 1:  # 카피 한 것보다 앞에 있으면
-                print(self.temp_list)
-                # print('chk1')
-                return self.temp_list[self.position]  # 내가 갔던 곳으로
+            if length==10 or length==11 :
+                return 1-self.temp_list[0]
             else:
-                if self.position == length - 1:
-                    # print('chk2')
-                    if self.temp_list[self.position] == 0:
-                        return 1
-                    else:
-                        return 0
+                if self.position < length - 1:  # 카피 한 것보다 앞에 있으면
+                    print(self.temp_list)
+                    # print('chk1')
+                    return self.temp_list[self.position]  # 내가 갔던 곳으로
                 else:
-                    # print('chk3')
-                    return random.randint(0, 1)
+                    if self.position == length - 1:
+                        # print('chk2')
+                        if self.temp_list[self.position] == 0:
+                            return 1
+                        else:
+                            return 0
+                    else:
+                        # print('chk3')
+                        return random.randint(0, 1)
+            # if self.position < length - 1:  # 카피 한 것보다 앞에 있으면
+            #     print(self.temp_list)
+            #     # print('chk1')
+            #     return self.temp_list[self.position]  # 내가 갔던 곳으로
+            # else:
+            #     if self.position == length - 1:
+            #         # print('chk2')
+            #         if self.temp_list[self.position] == 0:
+            #             return 1
+            #         else:
+            #             return 0
+            #     else:
+            #         # print('chk3')
+            #         return random.randint(0, 1)
         return 'error'
     # ================================================================================= for glass_stepping_stones game
 
