@@ -76,24 +76,71 @@ class my_own_player(part.Participant):
         # type4 corresponds a person with strong power
         # the return should be a tuple with size of 4, and the sum of the elements should be 10
         # only for computer, it is allowed to set 12 members
-        return (0, 0, 5, 5)
+        com_max_rate = 15
+        # 컴퓨터 전략상 발휘할 수 있는 최대 stamina : 15
+        com_max_force = (com_max_rate / 100) * 27000
+        # forces = [(left_player_rate / 100) * self.__player_strength[0],
+        #           (right_player_rate/ 100) * self.__player_strength[1]] (main.py 115-116줄)
+        # 컴퓨터 전략상 발휘할 수 있는 최대 힘 : 4050
+        global z
+        z = 0
+        # 아래 act_tugging_strategy에서 최적 opt_s 탐색 알고리즘이 한 게임당 1회만 돌아가도록 하기 위한 fake variable.
+        global opt_n
+        for opt_n in range(0,11):
+            player_static_force =  0.2 * (opt_n * 110 + 78 * (10 - opt_n)) * 9.8 * 2.5
+            # static_f_force = 0.2 * weight * self.__GRAVIT_ACCEL * self.__STATIC_FRICTION[condition_id] (main.py 87줄)
+            # 플레이어가 넘어지지 않는 경우 self.__STATIC_FRICTION[condition_id] 값이 2.5로 고정됨
+            # 팀의 무게에 따라 팀의 정지 마찰력이 달라짐
+            if player_static_force > com_max_force:
+                # 팀의 정지 마찰력이 컴퓨터의 발휘할 수 있는 최대힘보다 크도록 무게를 구성하면, 어떠한 경우에도 컴퓨터는 줄을 당길 수 없다.
+                # 위의 조건을 만족하면서 strength를 최대화 할 수 있도록 팀을 구성하는 i를 찾음.
+                break
+        # print(' □ : 최적 조합은 무거운 사람 {}명, 힘 센 사람을 {}명 조합이다.'.format(opt_n, 10-opt_n))
+        # 사실상 컴퓨터 전략이 바뀌지 않기에, 조합은 (0,0,2,8)로 고정된다
+        # 즉, 내 플레이어의 정지 마찰력이 4135.6
+        # 컴퓨터의 전략이 바뀌는 경우 코드의 일반화를 위해 최적 조합 탐색 알고리즘 작성함.
+        return (0, 0, opt_n, 10-opt_n)
 
     def act_tugging_strategy(self, playground_tug_of_war):
         # you can override this method in this sub-class
         # you can refer to an object of 'tug_of_war', named as 'playground_tug_of_war'
         # the return should be a float value in [0, 100]!
         # note that the float represents a stamina-consuming rate for tugging
-        if playground_tug_of_war.player_condition['Computer'] == False:
-            if playground_tug_of_war.player_expression[self.name] in ['best', 'well']:
-                return 15
-            else:
-                return 10
+        if playground_tug_of_war.player_expression['Computer'] in ['best', 'well']:
+            return 0
+            # 컴퓨터 전략 상 'best' 나 'well'인 상황에는 stamina를 1-15까지 중 한 값으로 상대적으로 높게 사용하기 때문에, 굳이 상대해주지 않음.
+            # return 값이 0 이어도 위의 팀 구성 단계에서 애초에 끌려갈 수 없도록 설계함.
         else:
-            if playground_tug_of_war.player_expression['Computer'] in ['best', 'well']:
-                return 0
+            if playground_tug_of_war.player_expression[self.name] in ['best', 'well']:
+                player_tug_range = ((opt_n * 162 + (10 - opt_n) * 165) / 10) * 0.35 * 0.01
+                # 0.5754 m
+                # 이 때, 도출된 Distance(d)가 내 tugging range (height * 0.35) = 0.5754m 보다 높게 나오면 넘어짐
+                # (main.py 196-218 줄)
+                # 넘어지는 상황을 방지하기 하면서, 최대 힘을 낼 수 있는 stamina consume rate 인 opt_s 찾는 것을 목표로 함.
+                com_min_rate = 1
+                # 컴퓨터는 전략상 이 때에 1,2,3 중 하나의 값을 return 하기 때문에 1로 설정
+                com_weight = 936
+                team_weight = 844
+                total_weight = com_weight + team_weight
+                com_static_force = 0.2 * com_weight * 9.8 * 2.5
+                com_strength = 12 * 5 * 450
+                com_min_force = (com_min_rate / 100) * com_strength
+                player_opt_strength = 5 * (opt_n * 300 + (10 - opt_n) * 450)
+                global opt_s, z
+                while z == 0 :
+                    for opt_s in range(101,1,-1):
+                        sum_force = player_opt_strength * (opt_s / 100) - com_min_force
+                        a = (sum_force - com_static_force) / total_weight
+                        v = a * 0.2
+                        d = v + 0.5 * a * 0.2 * 0.2
+                        if d < player_tug_range :
+                            z +=1
+                            break
+                return opt_s
+                # opt_s = 45
+
             else:
-                if playground_tug_of_war.player_expression[self.name] in ['best', 'well']:
-                    return 30 + random.randint(0, 3)
-                else:
-                    return random.randint(0, 3)
+                return 0
+                # 내 플레이어의 stamina 상태가 회복될 때 까지 대기함.
+                # return 값이 0 이어도 위의 팀 구성 단계에서 애초에 끌려갈 수 없도록 설계함.
     # ================================================================================= for tug_of_war game
