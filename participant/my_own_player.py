@@ -76,24 +76,29 @@ class my_own_player(part.Participant):
         # type4 corresponds a person with strong power
         # the return should be a tuple with size of 4, and the sum of the elements should be 10
         # only for computer, it is allowed to set 12 members
-        return (0, 0, 5, 5)
+        return (0, 0, 0, 10)
 
     def act_tugging_strategy(self, playground_tug_of_war):
         # you can override this method in this sub-class
         # you can refer to an object of 'tug_of_war', named as 'playground_tug_of_war'
         # the return should be a float value in [0, 100]!
         # note that the float represents a stamina-consuming rate for tugging
-        if playground_tug_of_war.player_condition['Computer'] == False:
-            if playground_tug_of_war.player_expression[self.name] in ['best', 'well']:
-                return 15
-            else:
-                return 10
+        opponent_con = playground_tug_of_war.player_condition["Computer"]
+        myself_con = playground_tug_of_war.player_condition[self.name]
+        opponent_exp = playground_tug_of_war.player_expression["Computer"]
+        myself_exp = playground_tug_of_war.player_expression[self.name]
+
+        # playground_tug_of_war.initialize_player_stamina()
+        if myself_con == False:
+            super().set_condition(True)
+            return 5
         else:
-            if playground_tug_of_war.player_expression['Computer'] in ['best', 'well']:
-                return 0
+            if opponent_con == False:
+                return 40
             else:
-                if playground_tug_of_war.player_expression[self.name] in ['best', 'well']:
-                    return 30 + random.randint(0, 3)
+                if opponent_exp in ['best', 'well']:
+                    return 0
                 else:
-                    return random.randint(0, 3)
-    # ================================================================================= for tug_of_war game
+                    return 15
+
+# ================================================================================= for tug_of_war game
