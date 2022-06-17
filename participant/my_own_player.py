@@ -77,11 +77,11 @@ class my_own_player(part.Participant):
         # the return should be a tuple with size of 4, and the sum of the elements should be 10
         # only for computer, it is allowed to set 12 members
 
-        return (0, 0, 0, 10)
+        return (0, 1, 0, 9)
         # 수적 열세인 상황에서 일반적인 힘겨루기로는 승리 가능성이 낮다 전망, 넘어진 상태를 최대한 활용하여 승리 모색
-        # 후술할 set.condition 메서드를 통해 넘어진 상태를 강제로 일으킬 수 있으므로 tugging range는 고려 X(tall person 의미 X)
         # computer 진영을 넘어뜨려야 하기에, 상대가 높은 stamina를 return할 때 최대한 많이 끌려가야 함(heavy person 비효율적)
         # 상대를 넘어뜨린 이후 최대한 많이 끌어와야 하므로 비슷한 몸무게 조건에서 힘이 더 쎈 사람 필요함(ordinary person 비효율적)
+        # tall person 1명 추가함으로써 전체적인 strength에 크게 영향이 없는 선에서 tugging range, maximum dragging distance 증가
 
     def act_tugging_strategy(self, playground_tug_of_war):
         # you can override this method in this sub-class
@@ -95,14 +95,21 @@ class my_own_player(part.Participant):
         myself_exp = playground_tug_of_war.player_expression[self.name]
 
         if myself_con == False:
-            super().set_condition(True) # 넘어진 상태에서 participant 클래스의 메서드를 활용해 강제로 일으키기
-            return 5 # computer 측은 우리 진영을 넘어진 상태로 인식하고 있으므로 최저의 return으로 넘어짐 유도
+            return 0 # 넘어진 상태에서는 stamina 투자에 따른 net force 기댓값이 현저히 낮으므로 stamina 보전 목적
         else:
             if opponent_con == False:
                 return 40 # 상대가 넘어졌을 때 최대한 끌어오기
             else:
-                if opponent_exp in ['best', 'well']:
-                    return 0 # 일반적인 경우에서의 힘겨루기는 수적 열세로 인해 승리 확률 낮으므로 stamina 보전 목적
+                if myself_exp == 'worst':
+                    if opponent_exp in ['best', 'well']:
+                        return 0 # stamina 회복 및 상대의 넘어짐 유도
+                    else:
+                        return 10 # 상대의 stamina가 낮을 때 반환하는 return이 적을 것으로 예상, configuration 특징 활용해 승부
+                elif myself_exp == 'bad':
+                    if opponent_exp in ['best', 'well']:
+                        return 0 # stamina 회복 및 상대의 넘어짐 유도
+                    else:
+                        return 20 # 상대의 stamina가 낮을 때 반환하는 return이 적을 것으로 예상, configuration 특징 활용해 승부
                 else:
-                    return 15 # 상대의 stamina가 낮을 때 반환되는 return이 적을 것으로 예상, configuration 특징 활용해 승부
-     # ================================================================================= for tug_of_war game
+                    return 10 # worst 상태가 될 때까지 stamina를 지속적으로 소모함
+    # ================================================================================= for tug_of_war game

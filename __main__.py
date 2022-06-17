@@ -33,7 +33,7 @@ if __name__ == '__main__':
     #    report(winner_name, team, 'marble')
 
     print("\n □ : 다음으로 줄다리기 게임을 시작합니다.\n")
-    for i in range(2):
+    for i in range(1):
         print("\n □ : {}번째 게임을 시작합니다.\n".format(i + 1))
         stage_map = r2.Map(5)
         stage = r2.tug_of_war(stage_map, players)
