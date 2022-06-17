@@ -25,20 +25,20 @@ if __name__ == '__main__':
     winner_name = ''
     print("\n □ : 모든 참가자가 성공적으로 입장하였습니다.\n")
 
-    print("\n □ : 홀짝게임을 먼저 시작합니다.\n")
-    for i in range(2):
-        print("\n □ : {}번째 게임을 시작합니다.\n".format(i + 1))
-        stage = r1.marbles(players)
-        winner_name = stage.run_game(players)
-        report(winner_name, team, 'marble')
+    # print("\n □ : 홀짝게임을 먼저 시작합니다.\n")
+    # for i in range(2):
+    #     print("\n □ : {}번째 게임을 시작합니다.\n".format(i + 1))
+    #     stage = r1.marbles(players)
+    #     winner_name = stage.run_game(players)
+    #     report(winner_name, team, 'marble')
 
-    print("\n □ : 다음으로 줄다리기 게임을 시작합니다.\n")
-    for i in range(2):
-        print("\n □ : {}번째 게임을 시작합니다.\n".format(i + 1))
-        stage_map = r2.Map(5)
-        stage = r2.tug_of_war(stage_map, players)
-        winner_name = stage.run_game(players, stage_map)
-        report(winner_name, team, 'Tug')
+    # print("\n □ : 다음으로 줄다리기 게임을 시작합니다.\n")
+    # for i in range(2):
+    #     print("\n □ : {}번째 게임을 시작합니다.\n".format(i + 1))
+    #     stage_map = r2.Map(5)
+    #     stage = r2.tug_of_war(stage_map, players)
+    #     winner_name = stage.run_game(players, stage_map)
+    #     report(winner_name, team, 'Tug')
 
     print("\n □ : 마지막으로 징검다리 게임을 시작합니다.\n")
     for i in range(2):

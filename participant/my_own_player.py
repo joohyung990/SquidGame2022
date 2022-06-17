@@ -38,29 +38,39 @@ class my_own_player(part.Participant):
 
 
     # ================================================================================= for glass_stepping_stones game
+    real_answer = []    # 내 경로가 저장될 list
     def step_toward_goal_strategy(self, playground_glasses):
         # you can override this method in this sub-class
         # you can refer to an object of 'glass_stepping_stones', named as 'playground_glasses'
         # the return should be 0 or 1 (int)!
-        if self.position == 0:
-            self.temp_list = copy.deepcopy(playground_glasses._players_steps)  # 상대방것도 복사
-        length = len(self.temp_list)
-        if self.previous_player != 'None' and self.temp_list != []:
-            if self.position < length - 1:  # 카피 한 것보다 앞에 있으면
-                print(self.temp_list)
-                # print('chk1')
-                return self.temp_list[self.position]  # 내가 갔던 곳으로
-            else:
-                if self.position == length - 1:
-                    # print('chk2')
-                    if self.temp_list[self.position] == 0:
-                        return 1
-                    else:
-                        return 0
+
+        if playground_glasses._round == 1:
+            self.real_answer = []
+            first_step = random.randint(0, 1)
+            self.real_answer.append(first_step)
+            return first_step   # 첫 번째 징검다리는 random
+        else:
+            if len(self.real_answer) < len(playground_glasses._players_steps):
+                self.real_answer = copy.deepcopy(playground_glasses._players_steps)
+                # 상대가 나보다 많이 진행했을 경우 상대의 경로 복사
+            length = len(self.real_answer)
+            length_com = len(playground_glasses._players_steps)
+            if self.position < length - 1:
+                return self.real_answer[self.position]  # 상대가 떨어지기 전 단계까지는 똑같이 진행
+            elif self.position == length - 1:
+                if self.real_answer[self.position] == 0:
+                    self.real_answer[self.position] = 1
                 else:
-                    # print('chk3')
-                    return random.randint(0, 1)
-        return 'error'
+                    self.real_answer[self.position] = 0
+                return self.real_answer[self.position]  # 상대가 떨어졌던 곳에서 다른 징검다리 선택
+            elif self.position == length:
+                self.real_answer.append(random.randint(0, 1))
+                if length >= length_com:    # 내가 상대보다 멀리 진행했을 경우
+                    if self.real_answer[0] == 0:
+                        playground_glasses._players_steps[0] = 1
+                    else:
+                        playground_glasses._players_steps[0] = 0    # 상대가 참고할 내 경로의 출발지점을 바꿔버리기
+                return self.real_answer[self.position]  # 그 이후는 random
     # ================================================================================= for glass_stepping_stones game
 
 
