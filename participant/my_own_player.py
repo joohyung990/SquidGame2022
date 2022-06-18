@@ -25,14 +25,19 @@ class my_own_player(part.Participant):
         # you can override this method in this sub-class
         # you can refer to an object of 'marbles', named as 'playground_marbles'
         # the return should be the number of marbles bet (> 0)!
-        my_current_marbles = playground_marbles.get_num_of_my_marbles(self)
-        return random.randint(playground_marbles.MIN_HOLDING, my_current_marbles)
+        
+        return 1
 
     def declare_statement_strategy(self, playground_marbles):
         # you can override this method in this sub-class
         # you can refer to an object of 'marbles', named as 'playground_marbles'
         # the return should be True or False!
-        answer = bool(random.randint(0, 1))
+        
+        if playground_marbles._marbles_in_hand % 2 == 0 :
+            answer = False
+        else:
+            answer = True
+
         return self.set_statement(answer)
     # ================================================================================= for marble game
 
