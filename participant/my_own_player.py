@@ -5,7 +5,7 @@ import copy
 
 class my_own_player(part.Participant):
     def __init__(self):
-        super().__init__('name of your team', 'team num')
+        super().__init__('no one', 'team D')
         # you can change everything in this code file!!
         # also, you can define your own variables here or in the overriding method
         # Any modifications are possible if you follows the rules of Squid Game
